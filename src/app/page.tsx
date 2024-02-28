@@ -18,9 +18,12 @@ export default function Home() {
     if (token) {
       CheckToken({ token }).then((response) => {
         if (response) router.push("/dashboard/orders");
-        else deleteCookie("token");
+        else {
+          deleteCookie("token");
+          router.replace("/landing");
+        }
       });
-    }
+    } else router.replace("/landing");
   });
 
   return (
@@ -49,7 +52,7 @@ export default function Home() {
         <div className="flex mt-16 gap-8 justify-center">
           <Telegram />
           <Mail />
-          <Whatsapp />
+          {/* <Whatsapp /> */}
         </div>
       </div>
     </div>

@@ -18,8 +18,6 @@ import {
 import Link from "next/link";
 import TabButton from "@/components/button/tabButton";
 import { GetOrders } from "@/routes/routes";
-import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
-import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
 
 interface OrdersGrid {
   id: string;

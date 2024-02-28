@@ -4,8 +4,6 @@ import {
   GetRowIdParams,
   CellValueChangedEvent,
 } from "ag-grid-community";
-import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
-import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the grid
 
 interface gridProps<T> {
   colDefs: ColDef<T>[];

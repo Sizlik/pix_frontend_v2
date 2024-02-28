@@ -49,7 +49,7 @@ export default function Home() {
         <div className="flex mt-16 gap-8 justify-center">
           <Telegram />
           <Mail />
-          <Whatsapp />
+          {/* <Whatsapp /> */}
         </div>
       </div>
     </div>
