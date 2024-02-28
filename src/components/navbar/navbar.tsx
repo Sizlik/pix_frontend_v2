@@ -34,6 +34,7 @@ type NavItemProps = {
   selected?: boolean;
   color?: string;
   icon?: ReactElement;
+  isBlocked?: boolean;
 };
 
 type NavbarSection = {
@@ -51,8 +52,18 @@ export default function Navbar({
     {
       title: "Главная",
       items: [
-        { title: "Главная", link: NavbarLinkEnum.main, icon: <Box /> },
-        { title: "Сообщения", link: NavbarLinkEnum.messages, icon: <Bell /> },
+        {
+          title: "Главная",
+          link: NavbarLinkEnum.main,
+          icon: <Box />,
+          isBlocked: true,
+        },
+        {
+          title: "Сообщения",
+          link: NavbarLinkEnum.messages,
+          icon: <Bell />,
+          isBlocked: true,
+        },
       ],
     },
     {
@@ -73,17 +84,24 @@ export default function Navbar({
           title: "Организации",
           link: NavbarLinkEnum.organizations,
           icon: <Building />,
+          isBlocked: true,
         },
       ],
     },
     {
       title: "Профиль",
       items: [
-        { title: "Настройки", link: NavbarLinkEnum.settings, icon: <Gear /> },
+        {
+          title: "Настройки",
+          link: NavbarLinkEnum.settings,
+          icon: <Gear />,
+          isBlocked: true,
+        },
         {
           title: "Статистика",
           link: NavbarLinkEnum.statistics,
           icon: <GraphUp />,
+          isBlocked: true,
         },
         {
           title: "Выход",
@@ -153,7 +171,33 @@ export default function Navbar({
   );
 }
 
-function NavItem({ title, link, selected = false, color, icon }: NavItemProps) {
+function NavItem({
+  title,
+  link,
+  selected = false,
+  color,
+  icon,
+  isBlocked,
+}: NavItemProps) {
+  const [hovered, setHovered] = useState<boolean>(false);
+  if (isBlocked)
+    return (
+      <div className="relative">
+        <div
+          className={`${selected ? "bg-[#444CE7] text-white" : `${color && `text-[#F04438]`} bg-red-50`} rounded-md px-8 py-2 transition-all flex items-center gap-3`}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          {icon}
+          {title}
+        </div>
+        {hovered && (
+          <div className="absolute top-10 z-10 bg-slate-500 text-center rounded-xl py-4 text-white bg-opacity-80">
+            Этот раздел появится в будущих обновлениях
+          </div>
+        )}
+      </div>
+    );
   return (
     <Link
       href={`/dashboard/${link}`}

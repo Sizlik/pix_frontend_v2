@@ -29,12 +29,12 @@ export default function SupportChat() {
         >
           <div className="bg-[#314255] h-[75px] w-full lg:rounded-t-xl text-white flex justify-between items-center px-4">
             <div>
-              <h3>Поддержка</h3>
+              <h3>Поддержка (Появится в следующем обновлении)</h3>
 
-              <div className="flex items-center gap-1.5 font-light">
+              {/* <div className="flex items-center gap-1.5 font-light">
                 <div className="bg-green-400 rounded-full w-2 h-2"></div>
                 <p>В сети</p>
-              </div>
+              </div> */}
             </div>
             <XCircleFill
               className="cursor-pointer hover:text-red-200 transition-all"
@@ -42,7 +42,7 @@ export default function SupportChat() {
               onClick={() => setIsOpened(false)}
             />
           </div>
-          <div className="h-[calc(100%-175px)]">
+          <div className="h-[calc(100%-175px)] blur-sm">
             <div className="h-full flex flex-col-reverse gap-2 py-2 overflow-y-auto">
               <Message isSender={false} message="Здравствуйте" />
               <Message

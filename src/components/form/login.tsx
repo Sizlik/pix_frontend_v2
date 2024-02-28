@@ -28,7 +28,7 @@ export default function LoginForm({
       username: data.email,
       password: data.password,
     }).then((response) => {
-      if (response.status == 200) router.push("/dashboard");
+      if (response.status == 200) router.push("/dashboard/orders");
     });
   };
 

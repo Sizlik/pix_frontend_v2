@@ -5,8 +5,8 @@ import {
   PixSearch,
   PixTextArea,
 } from "@/components/inputs/pixInputs";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { ColDef } from "ag-grid-community";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ColDef, IRowNode } from "ag-grid-community";
 import { Search, Square } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import PixButton from "@/components/button/button";
@@ -42,6 +42,7 @@ export default function Orders() {
   ];
   const [search, setSearch] = useState<string>("");
   const [tabButton, setTabButton] = useState<string>(tabButtons[0]);
+  const [gridColumnState, setGridColumnState] = useState<string>("");
   const ref = useRef<AgGridReact<OrdersGrid>>(null);
   const [colDefs, setColDefs] = useState<ColDef<OrdersGrid>[]>([
     {
@@ -58,6 +59,10 @@ export default function Orders() {
       minWidth: 250,
       headerName: "Статус",
       filter: true,
+      filterParams: {
+        readOnly: true,
+        maxNumConditions: 20,
+      },
     },
     {
       field: "count",
@@ -129,44 +134,114 @@ export default function Orders() {
   const onClickTabButton = (title: string) => {
     switch (title) {
       case "Все":
-        ref.current!.api.setColumnFilterModel("state", { values: [""] });
-        break;
-      case "В обработке":
-        ref.current!.api.setColumnFilterModel("state", {
-          values: [
-            "Новый",
-            "Собран",
-            "Отгружен",
-            "Подтвержден",
-            "Подтвержден клиентом",
-            "Подтвержден менеджером",
-            "Заказ доставляется",
-            "Выдан частично",
-            "Ожидание документов от продавца",
-            "Готов к выдаче",
-            "Обмен",
-            "Доставляется в РБ",
-            "В ожидании перевозчика",
-            "Заказ принят",
-            "Ожидание предоплаты",
-            "Принят к исполнению",
-            "Выслан продавцу",
-            "Возврат",
-            "Ожидание денег",
-            "Возвращен продавцу",
-            "",
-          ],
+        ref.current!.api.setColumnFilterModel("state", null).then(() => {
+          ref.current!.api.onFilterChanged();
         });
         break;
+      case "В обработке":
+        ref
+          .current!.api.setColumnFilterModel("state", {
+            filterType: "text",
+            conditions: [
+              {
+                type: "equals",
+                filter: "Новый",
+              },
+              {
+                type: "equals",
+                filter: "Собран",
+              },
+              {
+                type: "equals",
+                filter: "Отгружен",
+              },
+              {
+                type: "equals",
+                filter: "Подтвержден",
+              },
+              {
+                type: "equals",
+                filter: "Подтвержден клиентом",
+              },
+              {
+                type: "equals",
+                filter: "Подтвержден менеджером",
+              },
+              {
+                type: "equals",
+                filter: "Заказ доставляется",
+              },
+              {
+                type: "equals",
+                filter: "Выдан частично",
+              },
+              {
+                type: "equals",
+                filter: "Ожидание документов от продавца",
+              },
+              {
+                type: "equals",
+                filter: "Готов к выдаче",
+              },
+              {
+                type: "equals",
+                filter: "Обмен",
+              },
+              {
+                type: "equals",
+                filter: "Доставляется в РБ",
+              },
+              {
+                type: "equals",
+                filter: "В ожидании перевозчика",
+              },
+              {
+                type: "equals",
+                filter: "Заказ принят",
+              },
+              {
+                type: "equals",
+                filter: "Ожидание предоплаты",
+              },
+              {
+                type: "equals",
+                filter: "Принят к исполнению",
+              },
+              {
+                type: "equals",
+                filter: "Выслан продавцу",
+              },
+              {
+                type: "equals",
+                filter: "Возврат",
+              },
+              {
+                type: "equals",
+                filter: "Ожидание денег",
+              },
+              {
+                type: "equals",
+                filter: "Возвращен продавцу",
+              },
+            ],
+            operator: "OR",
+          })
+          .then(() => {
+            ref.current!.api.onFilterChanged();
+          });
+        break;
       case "Ждут подтверждения":
-        console.log();
-        const resp = ref
-          .current!.api.setColumnFilterModel(
-            ref.current?.api.getColumn("state")!,
-            {
-              values: ["Ожидает подтверждения клиента"],
-            }
-          )
+        ref
+          .current!.api.setColumnFilterModel("state", {
+            filterType: "text",
+            conditions: [
+              {
+                type: "equals",
+                filter: "Ожидает подтверждения клиента",
+              },
+            ],
+            operator: "OR",
+          })
           .then(() => {
             ref.current!.api.onFilterChanged();
           });
@@ -175,6 +250,28 @@ export default function Orders() {
         ref.current!.api.setColumnFilterModel("state", {
           values: ["Возврат", "Доставлен", "Отменен"],
         });
+        ref
+          .current!.api.setColumnFilterModel("state", {
+            filterType: "text",
+            conditions: [
+              {
+                type: "equals",
+                filter: "Возврат",
+              },
+              {
+                type: "equals",
+                filter: "Доставлен",
+              },
+              {
+                type: "equals",
+                filter: "Отменен",
+              },
+            ],
+            operator: "OR",
+          })
+          .then(() => {
+            ref.current!.api.onFilterChanged();
+          });
         break;
     }
   };
@@ -223,7 +320,7 @@ function OrderLink(props: CustomCellRendererProps<OrdersGrid>) {
   return (
     <Link
       className="text-[#2E90FA] hover:underline transition-all"
-      href={`/${props.data!.id}`}
+      href={`/dashboard/orders/${props.data!.id}`}
     >
       #{props.value}
     </Link>
