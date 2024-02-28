@@ -20,10 +20,9 @@ export default function Home() {
         if (response) router.push("/dashboard/orders");
         else {
           deleteCookie("token");
-          router.replace("/landing");
         }
       });
-    } else router.replace("/landing");
+    }
   });
 
   return (
