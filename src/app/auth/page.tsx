@@ -1,15 +1,15 @@
 "use client";
 import RegisterForm from "@/components/form/register";
-import Logo from "../../public/Logo";
-import Telegram from "../../public/Telegram";
-import Whatsapp from "../../public/Whasapp";
-import Mail from "../../public/Mail";
 import { motion } from "framer-motion";
 import AuthForm from "@/components/form/authForm";
 import { useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { CheckToken } from "@/routes/routes";
 import { useEffect } from "react";
+import Logo from "../../../public/Logo";
+import Telegram from "../../../public/Telegram";
+import Mail from "../../../public/Mail";
+import Whatsapp from "../../../public/Whasapp";
 
 export default function Home() {
   const router = useRouter();
