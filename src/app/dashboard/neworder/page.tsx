@@ -12,6 +12,8 @@ import { useForm } from "react-hook-form";
 import PixButton from "@/components/button/button";
 import { CustomCellRendererProps } from "ag-grid-react";
 import { CreateOrder } from "@/routes/routes";
+import FileOrderGrid from "@/components/fileOrderGrid/fileOrder";
+import { useRouter } from "next/navigation";
 
 type AddPositionInputs = {
   position: string;
@@ -34,8 +36,9 @@ interface CartData {
 }
 
 export default function NewOrder() {
+  const router = useRouter();
   const { register, handleSubmit } = useForm<AddPositionInputs>();
-
+  const [fileOrderOpenned, setFileOrderOpenned] = useState<boolean>(false);
   const [data, setData] = useState<CartData[] | []>([]);
   // const [data, setData] = useState<CartData[] | []>([
   //   { position: "Iphone SE", count: 1, comment: "test" },
@@ -66,9 +69,10 @@ export default function NewOrder() {
     },
     {
       field: "position",
-      resizable: false,
+      resizable: true,
       minWidth: 200,
       headerName: "Позиция",
+      cellRenderer: positionCell,
     },
     {
       field: "count",
@@ -166,9 +170,15 @@ export default function NewOrder() {
           comment: item.comment || "",
         };
       })
-    );
+    ).then(() => {
+      localStorage.removeItem("cart");
+      setData([]);
+      router.replace("/dashboard/orders");
+    });
   };
 
+  if (fileOrderOpenned)
+    return <FileOrderGrid setOpenned={setFileOrderOpenned} />;
   return (
     <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
       <div className="lg:h-[80vh] w-screen bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
@@ -186,7 +196,7 @@ export default function NewOrder() {
           rowData={rowData}
           className="w-full lg:h-full h-[260px]"
         />
-        <div className="flex justify-between">
+        <div className="flex lg:justify-end lg:gap-4 justify-between">
           <PixButton
             value="Очистить"
             variant="cancel"
@@ -232,7 +242,10 @@ export default function NewOrder() {
           />
           <div className="flex gap-4 justify-end">
             <PixButton value="Добавить" type="submit" />
-            <PixButton value="Загрузить файл" />
+            <PixButton
+              value="Загрузить файл"
+              onClick={() => setFileOrderOpenned(true)}
+            />
           </div>
         </form>
       </div>
@@ -255,4 +268,23 @@ function DeleteCell({
       className="text-red-400 hover:font-bold cursor-pointer transition-all"
     />
   );
+}
+
+function positionCell({ data }: CustomCellRendererProps<CartGrid>) {
+  const linkRegex =
+    /^(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/; // Регулярное выражение для поиска ссылок в тексте
+  const textBlocks = data!.position!.split(" ");
+  const text = textBlocks.map((text, index) => {
+    const link = text.match(linkRegex) && text.match(linkRegex)![0];
+    if (link) {
+      return (
+        <a key={index} href={link} className="text-blue-400 hover:underline">
+          {link}{" "}
+        </a>
+      );
+    } else {
+      return <span key={index}>{text} </span>;
+    }
+  });
+  return <div>{text}</div>;
 }

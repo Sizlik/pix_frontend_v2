@@ -60,6 +60,7 @@ export default function MyOrder({ params }: { params: { id: string } }) {
   const [search, setSearch] = useState<string>("");
   const [name, setName] = useState<string>("00000");
   const [state, setState] = useState<string>("Новый");
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
   const [colDefs, setColDefs] = useState<ColDef<OrderGrid>[]>([]);
   const router = useRouter();
 
@@ -284,6 +285,7 @@ export default function MyOrder({ params }: { params: { id: string } }) {
           resizable: false,
           minWidth: 250,
           headerName: "Позиция",
+          cellRenderer: positionCell,
         },
         {
           field: "count",
@@ -343,9 +345,10 @@ export default function MyOrder({ params }: { params: { id: string } }) {
         },
         {
           field: "position",
-          resizable: false,
+          resizable: true,
           minWidth: 250,
           headerName: "Позиция",
+          cellRenderer: positionCell,
         },
         {
           field: "count",
@@ -386,7 +389,62 @@ export default function MyOrder({ params }: { params: { id: string } }) {
       ]);
     }
   }, [state, params.id]);
-
+  if (isFullScreen)
+    return (
+      <div className="lg:w-screen lg:h-screen flex flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:p-4">
+        <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2 h-full">
+          <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
+            <PixSearch
+              onChange={onChangeSearch}
+              icon={<Search />}
+              inputClassName="w-[300px]"
+              className=""
+              placeholder="Поиск по заказу"
+            />
+            <button
+              onClick={() => setIsFullScreen(false)}
+              className="hover:underline cursor-pointer"
+            >
+              Свернуть
+            </button>
+            {state == "Ожидает подтверждения клиента" ? (
+              <div className="flex gap-2">
+                <PixButton
+                  value="Отказаться"
+                  onClick={handleCancelOrder}
+                  variant="cancel"
+                />
+                <PixButton
+                  value="Подтвердить заказ"
+                  onClick={handleAcceptOrder}
+                />
+              </div>
+            ) : (
+              <h1 className="font-bold text-2xl">Заказ #{name}</h1>
+            )}
+          </div>
+          {state == "Ожидает подтверждения клиента" ? (
+            <Grid
+              colDefs={colDefs}
+              quickFilterText={search}
+              rowData={rowData}
+              getRowId={getRowId}
+              onCellValueChanged={handleEditCount}
+              className="w-full lg:h-full h-[260px]"
+            />
+          ) : (
+            <Grid
+              colDefs={colDefs}
+              quickFilterText={search}
+              rowData={rowData}
+              getRowId={getRowId}
+              onCellValueChanged={handleEditCount}
+              className="w-full lg:h-full h-[260px]"
+            />
+          )}
+        </div>
+      </div>
+    );
   return (
     <div className="lg:w-screen lg:h-screen lg:grid lg:grid-cols-2 lg:grid-rows-2 flex flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:p-4">
       <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
@@ -398,6 +456,12 @@ export default function MyOrder({ params }: { params: { id: string } }) {
             className=""
             placeholder="Поиск по заказу"
           />
+          <button
+            onClick={() => setIsFullScreen(true)}
+            className="hover:underline cursor-pointer"
+          >
+            Развернуть
+          </button>
           {state == "Ожидает подтверждения клиента" ? (
             <div className="flex gap-2">
               <PixButton
@@ -515,4 +579,23 @@ function CancelPositionCellRenderer({
       Удалить
     </button>
   );
+}
+
+function positionCell({ data }: CustomCellRendererProps<OrderGrid>) {
+  const linkRegex =
+    /^(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/; // Регулярное выражение для поиска ссылок в тексте
+  const textBlocks = data!.position!.split(" ");
+  const text = textBlocks.map((text, index) => {
+    const link = text.match(linkRegex) && text.match(linkRegex)![0];
+    if (link) {
+      return (
+        <a key={index} href={link} className="text-blue-400 hover:underline">
+          {link}{" "}
+        </a>
+      );
+    } else {
+      return <span key={index}>{text} </span>;
+    }
+  });
+  return <div>{text}</div>;
 }

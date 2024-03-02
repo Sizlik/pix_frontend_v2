@@ -35,6 +35,7 @@ type NavItemProps = {
   color?: string;
   icon?: ReactElement;
   isBlocked?: boolean;
+  setIsOpened: (value: boolean) => void;
 };
 
 type NavbarSection = {
@@ -57,12 +58,14 @@ export default function Navbar({
           link: NavbarLinkEnum.main,
           icon: <Box />,
           isBlocked: true,
+          setIsOpened: setIsOpened,
         },
         {
           title: "Сообщения",
           link: NavbarLinkEnum.messages,
           icon: <Bell />,
           isBlocked: true,
+          setIsOpened: setIsOpened,
         },
       ],
     },
@@ -73,18 +76,26 @@ export default function Navbar({
           title: "Новый заказ",
           link: NavbarLinkEnum.neworder,
           icon: <CartPlus />,
+          setIsOpened: setIsOpened,
         },
-        { title: "Мои заказы", link: NavbarLinkEnum.orders, icon: <Basket /> },
+        {
+          title: "Мои заказы",
+          link: NavbarLinkEnum.orders,
+          icon: <Basket />,
+          setIsOpened: setIsOpened,
+        },
         {
           title: "Транзакции",
           link: NavbarLinkEnum.transactions,
           icon: <Journals />,
+          setIsOpened: setIsOpened,
         },
         {
           title: "Организации",
           link: NavbarLinkEnum.organizations,
           icon: <Building />,
           isBlocked: true,
+          setIsOpened: setIsOpened,
         },
       ],
     },
@@ -96,18 +107,21 @@ export default function Navbar({
           link: NavbarLinkEnum.settings,
           icon: <Gear />,
           isBlocked: true,
+          setIsOpened: setIsOpened,
         },
         {
           title: "Статистика",
           link: NavbarLinkEnum.statistics,
           icon: <GraphUp />,
           isBlocked: true,
+          setIsOpened: setIsOpened,
         },
         {
           title: "Выход",
           link: NavbarLinkEnum.logout,
           color: "#F04438",
           icon: <DoorOpen />,
+          setIsOpened: setIsOpened,
         },
       ],
     },
@@ -178,6 +192,7 @@ function NavItem({
   color,
   icon,
   isBlocked,
+  setIsOpened,
 }: NavItemProps) {
   const [hovered, setHovered] = useState<boolean>(false);
   if (isBlocked)
@@ -202,6 +217,7 @@ function NavItem({
     <Link
       href={`/dashboard/${link}`}
       className={`${selected ? "bg-[#444CE7] text-white" : `${color && `text-[#F04438]`} ${"hover:bg-slate-300"}`} rounded-md px-8 py-2 transition-all flex items-center gap-3`}
+      onClick={() => setIsOpened(false)}
     >
       {icon}
       {title}
