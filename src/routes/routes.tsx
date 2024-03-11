@@ -94,6 +94,13 @@ type PutPositionCountData = {
   count: any;
 };
 
+type GetActionsType = {
+  id: number;
+  new_state: string;
+  order_id: string;
+  date: string;
+}
+
 export function LoginEndpoint(data: LoginData) {
   const promise = axios.post(`${BACKEND_URL}/users/auth/jwt/login`, data, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -300,6 +307,20 @@ export async function ExportEndpoint(document_id: string, order_type: string) {
     });
   }
 
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function GetActions(order_id: string) {
+  const promise = axios.get<GetActionsType[]>(`${BACKEND_URL}/orders/actions/${order_id}`, {
+    headers: { Authorization: getCookie("token") },
+  });
 
   const response = toast.promise(promise, {
     loading: "Загрузка...",
