@@ -12,8 +12,10 @@ import toast from "react-hot-toast";
 import { CreateOrder } from "@/routes/routes";
 
 const BACKEND_URL = "https://pixlogistic.com/api_v1";
+// const BACKEND_URL = "http://localhost:8000/api_v1";
 
-export default function FileOrderGrid({setOpenned}) {
+
+export default function FileOrderGrid({ setOpenned }) {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
@@ -131,17 +133,17 @@ export default function FileOrderGrid({setOpenned}) {
 
     setLoader(true);
     CreateOrder(orders).then((reponse) => {
-        setLoader(false);
+      setLoader(false);
 
-        router.replace("/dashboard/orders");
-        localStorage.setItem(
-          "section",
-          JSON.stringify({
-            section: "Для клиента",
-            title: "Мои заказы",
-          })
-        );
-      })
+      router.replace("/dashboard/orders");
+      localStorage.setItem(
+        "section",
+        JSON.stringify({
+          section: "Для клиента",
+          title: "Мои заказы",
+        })
+      );
+    })
       .catch(() => {
         setLoader(false);
 
@@ -149,7 +151,7 @@ export default function FileOrderGrid({setOpenned}) {
       });
   };
 
-  useEffect(() => {}, [data]);
+  useEffect(() => { }, [data]);
   return (
     <div className="flex flex-col">
       <div className="flex mt-2 lg:flex-row flex-col items-center lg:h-20 lg:gap-12 h-full gap-2 lg:mb-0 mb-4">

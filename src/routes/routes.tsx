@@ -3,6 +3,7 @@ import { getCookie, setCookie } from "cookies-next";
 import toast from "react-hot-toast";
 
 const BACKEND_URL = "https://pixlogistic.com/api_v1";
+// const BACKEND_URL = "http://localhost:8000/api_v1";
 
 type LoginData = {
   username: string;
@@ -67,6 +68,8 @@ type GetOrderType = {
   positions: { rows: OrderPositionRow[] };
   state: { name: string };
   name: string;
+  purchaseOrders?: any[];
+  invoicesOut?: any[];
 };
 
 type TransactionRow = {
@@ -273,6 +276,30 @@ export async function CancelOrderEndpoint(order_id: string) {
   const promise = axios.delete(`${BACKEND_URL}/orders/${order_id}`, {
     headers: { Authorization: getCookie("token") },
   });
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function ExportEndpoint(document_id: string, order_type: string) {
+  let promise;
+  if (order_type == "order") {
+    promise = axios.get(`${BACKEND_URL}/orders/export/${document_id}`, {
+      headers: { Authorization: getCookie("token") },
+      responseType: "blob",
+    });
+  } else {
+    promise = axios.get(`${BACKEND_URL}/orders/${order_type}/export/${document_id}`, {
+      headers: { Authorization: getCookie("token") },
+      responseType: "blob",
+    });
+  }
+
 
   const response = toast.promise(promise, {
     loading: "Загрузка...",

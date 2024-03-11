@@ -20,6 +20,7 @@ import TabButton from "@/components/button/tabButton";
 import {
   AcceptOrderEndpoint,
   CancelOrderEndpoint,
+  ExportEndpoint,
   GetOrder,
   PutPositionCountEndpoint,
   RemovePositionEndpoint,
@@ -52,12 +53,12 @@ interface ActionsGrid extends Document {
 }
 
 interface DocumtnsGrid extends Document {
-  date: string;
   download?: null;
 }
 
 export default function MyOrder({ params }: { params: { id: string } }) {
   const [search, setSearch] = useState<string>("");
+  const [searchDocument, setSearchDocument] = useState<string>("");
   const [name, setName] = useState<string>("00000");
   const [state, setState] = useState<string>("Новый");
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
@@ -154,33 +155,6 @@ export default function MyOrder({ params }: { params: { id: string } }) {
     })
   );
 
-  const documentData: DocumtnsGrid[] = [
-    {
-      document_id: "1",
-      document_name: "Документ №1",
-      date: "2020-01-01",
-    },
-    {
-      document_id: "1",
-      document_name: "Документ №2",
-      date: "2020-01-01",
-    },
-    {
-      document_id: "1",
-      document_name: "Документ №3",
-      date: "2020-01-01",
-    },
-    {
-      document_id: "1",
-      document_name: "Документ №4",
-      date: "2020-01-01",
-    },
-    {
-      document_id: "1",
-      document_name: "Документ №5",
-      date: "2020-01-01",
-    },
-  ];
   const [documentColDefs, setDocumentColDefs] = useState<
     ColDef<DocumtnsGrid>[]
   >([
@@ -189,35 +163,23 @@ export default function MyOrder({ params }: { params: { id: string } }) {
       resizable: false,
       minWidth: 200,
       headerName: "Документ",
-      width: 200,
     },
     {
       field: "download",
       resizable: false,
-      minWidth: 150,
-      width: 150,
       headerName: "Скачать",
       cellRenderer: DownloadDocumentCellRenderer,
     },
-    {
-      field: "date",
-      resizable: false,
-      minWidth: 120,
-      width: 120,
-      headerName: "Дата",
-    },
   ]);
 
-  const [documentRowData, setDocumentRowData] = useState<DocumtnsGrid[]>(
-    documentData.map((item, index) => {
-      return {
-        ...item,
-      };
-    })
-  );
+  const [documentRowData, setDocumentRowData] = useState<DocumtnsGrid[]>([])
 
   const onChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
+  };
+
+  const onChangeSearchDocument = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchDocument(event.target.value);
   };
 
   const handleEditCount = (event: CellValueChangedEvent<OrderGrid>) => {
@@ -253,6 +215,20 @@ export default function MyOrder({ params }: { params: { id: string } }) {
           };
         })
       );
+      const documentRowData = [{
+        document_id: params.id,
+        document_type: 'order',
+        document_name: 'Документ "Заказ"',
+      }]
+      if (response.data.invoicesOut?.length) { 
+        const invoiceLength = response.data.invoicesOut[0].meta.href.split("/").length
+        documentRowData.push({
+        document_id: response.data.invoicesOut[0].meta.href.split("/")[invoiceLength-1],
+        document_type: 'invoiceout',
+        document_name: 'Документ "Счёт"',
+      })
+    }
+      setDocumentRowData(documentRowData)
       setName(response.data.name);
       setState(response.data.state.name);
     });
@@ -517,10 +493,10 @@ export default function MyOrder({ params }: { params: { id: string } }) {
       </div>
 
       <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
-        <p className="text-center">Документы появятся в следующем обновлении</p>
-        <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2 blur-sm">
+        <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
           <PixSearch
             icon={<Search />}
+            onChange={onChangeSearchDocument}
             inputClassName="w-[300px]"
             className=""
             placeholder="Поиск по документм"
@@ -530,7 +506,8 @@ export default function MyOrder({ params }: { params: { id: string } }) {
         <Grid
           colDefs={documentColDefs}
           rowData={documentRowData}
-          className="w-full lg:h-full h-[260px] blur-sm"
+          quickFilterText={searchDocument}
+          className="w-full lg:h-full h-[260px]"
         />
       </div>
       <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
@@ -547,8 +524,16 @@ export default function MyOrder({ params }: { params: { id: string } }) {
 function DownloadDocumentCellRenderer(
   props: CustomCellRendererProps<DocumtnsGrid>
 ) {
+  const handleDownload = () => {
+    ExportEndpoint(props.data!.document_id!, props.data!.document_type!).then((response) => {
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
+      const pdfWindow = window.open();
+      pdfWindow!.location.href = fileURL;
+    })
+  }
   return (
-    <Link className="text-[#2E90FA] hover:underline transition-all" href="#">
+    <Link className="text-[#2E90FA] hover:underline transition-all" href="#" onClick={handleDownload}>
       Скачать
     </Link>
   );
