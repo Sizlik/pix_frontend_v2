@@ -75,7 +75,7 @@ export default function SupportChat() {
             />
           </div>
           <div className="h-[calc(100%-175px)]">
-            <div className="h-full flex flex-col-reverse gap-2 py-2 overflow-y-auto">
+            <div className="h-full flex flex-col-reverse gap-2 py-2 overflow-y-auto scrollbar">
               {messages?.map((item, index) => {
                 return <Message key={index} isSender={item.from_user_id == item.to_chat_room_id} message={item.message} />
               })}

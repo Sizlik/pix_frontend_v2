@@ -1,7 +1,7 @@
 "use client";
 import Navbar, { NavbarLinkEnum } from "@/components/navbar/navbar";
 import SupportChat from "@/components/supportChat/supportChat";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 
 export default function DashboardLayout({
   children, // will be a page or nested layout
@@ -9,6 +9,15 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const segment = useSelectedLayoutSegment();
+  const pathname = usePathname()
+  if (pathname.startsWith("/dashboard/orders/") && pathname.split("/").length == 4) {
+    return (
+      <section className="overflow-clip">
+        <Navbar selectedItem={NavbarLinkEnum.orders} />
+        {children}
+      </section>
+    );
+  }
 
   if (
     segment == NavbarLinkEnum.main ||

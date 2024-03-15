@@ -354,3 +354,17 @@ export async function GetMessagesEndpoint() {
 
   return response;
 }
+
+export async function GetMessagesOrderEndpoint(order_id: string) {
+  const promise = axios.get<getMessagesType[]>(`${BACKEND_URL}/chat/messages/${order_id}`, {
+    headers: { Authorization: getCookie("token") },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}

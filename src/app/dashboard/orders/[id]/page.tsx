@@ -5,13 +5,13 @@ import {
   PixSearch,
   PixTextArea,
 } from "@/components/inputs/pixInputs";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   ColDef,
   GetRowIdParams,
   CellValueChangedEvent,
 } from "ag-grid-community";
-import { Search, Square } from "react-bootstrap-icons";
+import { Search, Square, SymmetryHorizontal } from "react-bootstrap-icons";
 import { useForm } from "react-hook-form";
 import PixButton from "@/components/button/button";
 import { AgGridReactProps, CustomCellRendererProps } from "ag-grid-react";
@@ -22,11 +22,14 @@ import {
   CancelOrderEndpoint,
   ExportEndpoint,
   GetActions,
+  GetMessagesOrderEndpoint,
   GetOrder,
   PutPositionCountEndpoint,
   RemovePositionEndpoint,
+  getMessagesType,
 } from "@/routes/routes";
 import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next";
 
 interface OrderGrid {
   id?: number;
@@ -55,6 +58,10 @@ interface DocumtnsGrid extends Document {
   download?: null;
 }
 
+interface PixInputSupportChatFields {
+  message: string;
+}
+
 export default function MyOrder({ params }: { params: { id: string } }) {
   const [search, setSearch] = useState<string>("");
   const [searchDocument, setSearchDocument] = useState<string>("");
@@ -63,6 +70,10 @@ export default function MyOrder({ params }: { params: { id: string } }) {
   const [state, setState] = useState<string>("Новый");
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
   const [colDefs, setColDefs] = useState<ColDef<OrderGrid>[]>([]);
+  const [messages, setMessages] = useState<getMessagesType[]>();
+  const { register } = useForm<PixInputSupportChatFields>();
+  const [socket, setSocket] = useState<WebSocket>();
+
   const router = useRouter();
 
   const [rowData, setRowData] = useState<OrderGrid[]>([]);
@@ -135,6 +146,7 @@ export default function MyOrder({ params }: { params: { id: string } }) {
     params.data.position_id;
 
   useEffect(() => {
+    console.log("here")
     GetOrder(params.id).then((response) => {
       setRowData(
         response.data.positions.rows.map((item, index) => {
@@ -172,7 +184,27 @@ export default function MyOrder({ params }: { params: { id: string } }) {
         return { ...item }
       }))
     })
-  }, [params.id]);
+    socket?.close()
+    // const newSocket = new WebSocket(`ws://localhost:8000/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`)
+    const newSocket = new WebSocket(`wss://pixlogistic.com/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`)
+    newSocket.onmessage = (event: MessageEvent) => {
+      const message = JSON.parse(event.data)
+      setMessages((prev) => {
+        if (prev) return [message, ...prev]
+        else return [message]
+      })
+    }
+    setSocket(newSocket)
+    GetMessagesOrderEndpoint(params.id).then((response) => {
+      setMessages(response.data)
+    })
+  }, []);
+
+  const sendMessage = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    socket?.send(JSON.stringify({ message: event.currentTarget.message.value, to_chat_room_id: params.id }))
+    event.currentTarget.message.value = ""
+  }
 
   const handleAcceptOrder = () => {
     AcceptOrderEndpoint(params.id).then((response) => {
@@ -452,11 +484,33 @@ export default function MyOrder({ params }: { params: { id: string } }) {
         />
       </div>
       <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
-        <p className="text-center">Чат появится в следующем обновлении</p>
-        <div className="flex lg:flex-row flex-col-reverse justify-end items-center lg:gap-0 gap-2 blur-sm">
+        <div className="flex lg:flex-row flex-col-reverse justify-end items-center lg:gap-0 gap-2">
           <h1 className="font-bold text-2xl">Чат по заказу</h1>
         </div>
-        <div className="lg:w-full lg:h-full h-screen w-screen bg-slate-100 rounded-xl"></div>
+        <div className="h-[calc(100%-50px)] bg-gradient-radial from-[#ACCBEE] to-[#E7F0FD] rounded-xl">
+          <div className="h-[calc(100%-100px)] flex flex-col-reverse gap-2 py-2 overflow-y-auto scrollbar max-h-[50vh]">
+            {messages?.map((item, index) => {
+              return <Message key={index} isSender={item.first_name != "bot"} message={item.message} />
+            })}
+            <Message
+              isSender={false}
+              message="Здравствуйте! Если у вас возникли какие-либо вопросы, задайте их в этом чате."
+            />
+          </div>
+          <form onSubmit={sendMessage} className="">
+            <div className="h-[100px] p-2 relative flex justify-between items-center">
+              <PixTextArea
+                className="w-full"
+                name="message"
+                register={register}
+                placeholder="Введите сообщение..."
+              />
+              <button type="submit" className="text-white bg-[#314255] w-12 h-12 flex justify-center items-center rounded-full absolute right-8 hover:scale-110 transition-all cursor-pointer active:scale-100">
+                <SymmetryHorizontal size={24} className="relative left-0.5" />
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -525,3 +579,22 @@ function positionCell({ data }: CustomCellRendererProps<OrderGrid>) {
   });
   return <div>{text}</div>;
 }
+
+function Message({
+  isSender,
+  message,
+}: {
+  isSender: boolean;
+  message: string;
+}) {
+  return isSender ? (
+    <div className="max-w-[80%] bg-white border border-[#314255] px-2 py-2 rounded-xl ms-2 place-self-start text-start">
+      {message}
+    </div>
+  ) : (
+    <div className="max-w-[80%] bg-[#314255] px-2 py-2 rounded-xl place-self-end text-white font-light text-end me-2">
+      {message}
+    </div>
+  );
+}
+
