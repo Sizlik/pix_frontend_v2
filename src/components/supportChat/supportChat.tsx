@@ -29,7 +29,7 @@ export default function SupportChat() {
   useEffect(() => {
     if (isOpened) {
       // const newSocket = new WebSocket(`ws://localhost:8000/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}`)
-      const newSocket = new WebSocket(`wss://pixlogistic/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}`)
+      const newSocket = new WebSocket(`wss://pixlogistic.com/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}`)
       setSocket(newSocket)
       newSocket.onmessage = (event: MessageEvent) => {
         const message = JSON.parse(event.data)
