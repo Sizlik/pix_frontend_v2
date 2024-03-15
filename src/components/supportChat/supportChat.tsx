@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   ChatDotsFill,
   SymmetryHorizontal,
@@ -7,6 +7,8 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { PixInput, PixTextArea } from "../inputs/pixInputs";
 import { useForm } from "react-hook-form";
+import { getCookie } from "cookies-next";
+import { GetMessagesEndpoint, getMessagesType } from "@/routes/routes";
 
 interface PixInputSupportChatFields {
   message: string;
@@ -14,7 +16,37 @@ interface PixInputSupportChatFields {
 
 export default function SupportChat() {
   const [isOpened, setIsOpened] = useState<boolean>(false);
+  const [socket, setSocket] = useState<WebSocket>();
   const { register } = useForm<PixInputSupportChatFields>();
+  const [messages, setMessages] = useState<getMessagesType[]>();
+
+  const sendMessage = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    socket?.send(JSON.stringify({ message: event.currentTarget.message.value }))
+    event.currentTarget.message.value = ""
+  }
+
+  useEffect(() => {
+    if (isOpened) {
+      // const newSocket = new WebSocket(`ws://localhost:8000/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}`)
+      const newSocket = new WebSocket(`wss://pixlogistic/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}`)
+      setSocket(newSocket)
+      newSocket.onmessage = (event: MessageEvent) => {
+        const message = JSON.parse(event.data)
+        setMessages((prev) => {
+          if (prev) return [message, ...prev]
+          else return [message]
+        })
+      }
+    }
+    else socket?.close()
+  }, [isOpened])
+
+  useEffect(() => {
+    GetMessagesEndpoint().then((response) => {
+      setMessages(response.data)
+    })
+  }, [])
 
   return (
     <AnimatePresence>
@@ -29,12 +61,12 @@ export default function SupportChat() {
         >
           <div className="bg-[#314255] h-[75px] w-full lg:rounded-t-xl text-white flex justify-between items-center px-4">
             <div>
-              <h3>Поддержка (Появится в следующем обновлении)</h3>
+              <h3>Поддержка</h3>
 
-              {/* <div className="flex items-center gap-1.5 font-light">
+              <div className="flex items-center gap-1.5 font-light">
                 <div className="bg-green-400 rounded-full w-2 h-2"></div>
                 <p>В сети</p>
-              </div> */}
+              </div>
             </div>
             <XCircleFill
               className="cursor-pointer hover:text-red-200 transition-all"
@@ -42,35 +74,29 @@ export default function SupportChat() {
               onClick={() => setIsOpened(false)}
             />
           </div>
-          <div className="h-[calc(100%-175px)] blur-sm">
+          <div className="h-[calc(100%-175px)]">
             <div className="h-full flex flex-col-reverse gap-2 py-2 overflow-y-auto">
-              <Message isSender={false} message="Здравствуйте" />
+              {messages?.map((item, index) => {
+                return <Message key={index} isSender={item.from_user_id == item.to_chat_room_id} message={item.message} />
+              })}
               <Message
-                isSender={true}
+                isSender={false}
                 message="Здравствуйте! Если у вас возникли какие-либо вопросы, задайте их в этом чате."
               />
-              <Message isSender={false} message="Тестовое сообщение" />
-              <Message isSender={true} message="Тестовое сообщение" />
-              <Message isSender={false} message="Тестовое сообщение" />
-              <Message isSender={true} message="Тестовое сообщение" />
-              <Message isSender={false} message="Тестовое сообщение" />
-              <Message isSender={true} message="Тестовое сообщение" />
-              <Message isSender={false} message="Тестовое сообщение" />
-              <Message isSender={true} message="Тестовое сообщение" />
-              <Message isSender={false} message="Тестовое сообщение" />
-              <Message isSender={true} message="Тестовое сообщение" />
             </div>
-            <div className="h-[100px] p-2 relative flex justify-between items-center">
-              <PixTextArea
-                className="w-full"
-                name="message"
-                register={register}
-                placeholder="Введите сообщение..."
-              />
-              <div className="text-white bg-[#314255] w-12 h-12 flex justify-center items-center rounded-full absolute right-8 hover:scale-110 transition-all cursor-pointer active:scale-100">
-                <SymmetryHorizontal size={24} className="relative left-0.5" />
+            <form onSubmit={sendMessage}>
+              <div className="h-[100px] p-2 relative flex justify-between items-center">
+                <PixTextArea
+                  className="w-full"
+                  name="message"
+                  register={register}
+                  placeholder="Введите сообщение..."
+                />
+                <button type="submit" className="text-white bg-[#314255] w-12 h-12 flex justify-center items-center rounded-full absolute right-8 hover:scale-110 transition-all cursor-pointer active:scale-100">
+                  <SymmetryHorizontal size={24} className="relative left-0.5" />
+                </button>
               </div>
-            </div>
+            </form>
           </div>
         </motion.div>
       ) : (

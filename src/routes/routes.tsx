@@ -101,6 +101,16 @@ type GetActionsType = {
   date: string;
 }
 
+export type getMessagesType = {
+  first_name: string;
+  from_user_id: string;
+  id: string;
+  message: string;
+  time_created: string;
+  time_updated: string;
+  to_chat_room_id: string;
+}
+
 export function LoginEndpoint(data: LoginData) {
   const promise = axios.post(`${BACKEND_URL}/users/auth/jwt/login`, data, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -319,6 +329,20 @@ export async function ExportEndpoint(document_id: string, order_type: string) {
 
 export async function GetActions(order_id: string) {
   const promise = axios.get<GetActionsType[]>(`${BACKEND_URL}/orders/actions/${order_id}`, {
+    headers: { Authorization: getCookie("token") },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function GetMessagesEndpoint() {
+  const promise = axios.get<getMessagesType[]>(`${BACKEND_URL}/chat/messages`, {
     headers: { Authorization: getCookie("token") },
   });
 
