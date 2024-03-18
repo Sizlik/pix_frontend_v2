@@ -1,4 +1,5 @@
 "use client";
+import Balance from "@/components/balance/balance";
 import Navbar, { NavbarLinkEnum } from "@/components/navbar/navbar";
 import SupportChat from "@/components/supportChat/supportChat";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
@@ -14,6 +15,7 @@ export default function DashboardLayout({
     return (
       <section className="overflow-clip">
         <Navbar selectedItem={NavbarLinkEnum.orders} />
+        <Balance />
         {children}
       </section>
     );
@@ -33,6 +35,7 @@ export default function DashboardLayout({
     return (
       <section className="overflow-clip">
         <Navbar selectedItem={segment} />
+        <Balance />
         <SupportChat />
         {children}
       </section>
@@ -42,6 +45,7 @@ export default function DashboardLayout({
   return (
     <section>
       <Navbar />
+      <Balance />
       <SupportChat />
       {children}
     </section>
