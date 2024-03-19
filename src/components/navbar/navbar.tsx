@@ -57,7 +57,6 @@ export default function Navbar({
           title: "Главная",
           link: NavbarLinkEnum.main,
           icon: <Box />,
-          isBlocked: true,
           setIsOpened: setIsOpened,
         },
         {
