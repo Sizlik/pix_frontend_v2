@@ -114,7 +114,7 @@ export default function MyOrder({ params }: { params: { id: string } }) {
     },
   ]);
 
-  const [documentRowData, setDocumentRowData] = useState<DocumtnsGrid[]>([])
+  const [documentRowData, setDocumentRowData] = useState<DocumtnsGrid[]>([]);
 
   const onChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -146,7 +146,7 @@ export default function MyOrder({ params }: { params: { id: string } }) {
     params.data.position_id;
 
   useEffect(() => {
-    console.log("here")
+    console.log("here");
     GetOrder(params.id).then((response) => {
       setRowData(
         response.data.positions.rows.map((item, index) => {
@@ -162,49 +162,66 @@ export default function MyOrder({ params }: { params: { id: string } }) {
           };
         })
       );
-      const documentRowData = [{
-        document_id: params.id,
-        document_type: 'order',
-        document_name: 'Документ "Заказ"',
-      }]
+      const documentRowData = [
+        {
+          document_id: params.id,
+          document_type: "order",
+          document_name: 'Документ "Заказ"',
+        },
+      ];
       if (response.data.invoicesOut?.length) {
-        const invoiceLength = response.data.invoicesOut[0].meta.href.split("/").length
+        const invoiceLength =
+          response.data.invoicesOut[0].meta.href.split("/").length;
         documentRowData.push({
-          document_id: response.data.invoicesOut[0].meta.href.split("/")[invoiceLength - 1],
-          document_type: 'invoiceout',
+          document_id:
+            response.data.invoicesOut[0].meta.href.split("/")[
+              invoiceLength - 1
+            ],
+          document_type: "invoiceout",
           document_name: 'Документ "Счёт"',
-        })
+        });
       }
-      setDocumentRowData(documentRowData)
+      setDocumentRowData(documentRowData);
       setName(response.data.name);
       setState(response.data.state.name);
     });
     GetActions(params.id).then((response) => {
-      setActionRowData(response.data.map((item) => {
-        return { ...item }
-      }))
-    })
-    socket?.close()
-    // const newSocket = new WebSocket(`ws://localhost:8000/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`)
-    const newSocket = new WebSocket(`wss://pixlogistic.com/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`)
+      setActionRowData(
+        response.data.map((item) => {
+          return { ...item };
+        })
+      );
+    });
+    socket?.close();
+    // const newSocket = new WebSocket(
+    //   `ws://localhost:8000/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`
+    // );
+    const newSocket = new WebSocket(
+      `wss://pixlogistic.com/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`
+    );
     newSocket.onmessage = (event: MessageEvent) => {
-      const message = JSON.parse(event.data)
+      const message = JSON.parse(event.data);
       setMessages((prev) => {
-        if (prev) return [message, ...prev]
-        else return [message]
-      })
-    }
-    setSocket(newSocket)
+        if (prev) return [message, ...prev];
+        else return [message];
+      });
+    };
+    setSocket(newSocket);
     GetMessagesOrderEndpoint(params.id).then((response) => {
-      setMessages(response.data)
-    })
+      setMessages(response.data);
+    });
   }, []);
 
   const sendMessage = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    socket?.send(JSON.stringify({ message: event.currentTarget.message.value, to_chat_room_id: params.id }))
-    event.currentTarget.message.value = ""
-  }
+    event.preventDefault();
+    socket?.send(
+      JSON.stringify({
+        message: event.currentTarget.message.value,
+        to_chat_room_id: params.id,
+      })
+    );
+    event.currentTarget.message.value = "";
+  };
 
   const handleAcceptOrder = () => {
     AcceptOrderEndpoint(params.id).then((response) => {
@@ -490,7 +507,13 @@ export default function MyOrder({ params }: { params: { id: string } }) {
         <div className="h-[calc(100%-50px)] bg-gradient-radial from-[#ACCBEE] to-[#E7F0FD] rounded-xl">
           <div className="h-[calc(100%-100px)] flex flex-col-reverse gap-2 py-2 overflow-y-auto scrollbar max-h-[50vh]">
             {messages?.map((item, index) => {
-              return <Message key={index} isSender={item.first_name != "bot"} message={item.message} />
+              return (
+                <Message
+                  key={index}
+                  isSender={item.first_name != "bot"}
+                  message={item.message}
+                />
+              );
             })}
             <Message
               isSender={false}
@@ -505,7 +528,10 @@ export default function MyOrder({ params }: { params: { id: string } }) {
                 register={register}
                 placeholder="Введите сообщение..."
               />
-              <button type="submit" className="text-white bg-[#314255] w-12 h-12 flex justify-center items-center rounded-full absolute right-8 hover:scale-110 transition-all cursor-pointer active:scale-100">
+              <button
+                type="submit"
+                className="text-white bg-[#314255] w-12 h-12 flex justify-center items-center rounded-full absolute right-8 hover:scale-110 transition-all cursor-pointer active:scale-100"
+              >
                 <SymmetryHorizontal size={24} className="relative left-0.5" />
               </button>
             </div>
@@ -520,15 +546,21 @@ function DownloadDocumentCellRenderer(
   props: CustomCellRendererProps<DocumtnsGrid>
 ) {
   const handleDownload = () => {
-    ExportEndpoint(props.data!.document_id!, props.data!.document_type!).then((response) => {
-      const file = new Blob([response.data], { type: "application/pdf" });
-      const fileURL = URL.createObjectURL(file);
-      const pdfWindow = window.open();
-      pdfWindow!.location.href = fileURL;
-    })
-  }
+    ExportEndpoint(props.data!.document_id!, props.data!.document_type!).then(
+      (response) => {
+        const file = new Blob([response.data], { type: "application/pdf" });
+        const fileURL = URL.createObjectURL(file);
+        const pdfWindow = window.open();
+        pdfWindow!.location.href = fileURL;
+      }
+    );
+  };
   return (
-    <Link className="text-[#2E90FA] hover:underline transition-all" href="#" onClick={handleDownload}>
+    <Link
+      className="text-[#2E90FA] hover:underline transition-all"
+      href="#"
+      onClick={handleDownload}
+    >
       Скачать
     </Link>
   );
@@ -597,4 +629,3 @@ function Message({
     </div>
   );
 }
-

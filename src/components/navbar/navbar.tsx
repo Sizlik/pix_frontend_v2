@@ -25,7 +25,7 @@ export enum NavbarLinkEnum {
   settings = "settings",
   statistics = "statistics",
   logout = "logout",
-  messages = "messages",
+  messages = "notifications",
 }
 
 type NavItemProps = {
@@ -60,10 +60,9 @@ export default function Navbar({
           setIsOpened: setIsOpened,
         },
         {
-          title: "Сообщения",
+          title: "Оповещения",
           link: NavbarLinkEnum.messages,
           icon: <Bell />,
-          isBlocked: true,
           setIsOpened: setIsOpened,
         },
       ],

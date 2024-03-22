@@ -99,7 +99,7 @@ type GetActionsType = {
   new_state: string;
   order_id: string;
   date: string;
-}
+};
 
 export type getMessagesType = {
   first_name: string;
@@ -109,7 +109,22 @@ export type getMessagesType = {
   time_created: string;
   time_updated: string;
   to_chat_room_id: string;
-}
+};
+
+export type getNotificationsType = {
+  type: string;
+  user_id: string;
+  time_created: string;
+  id: string;
+  is_readed: boolean;
+  object_id?: string;
+  message?: string;
+  from_user_id?: string;
+  first_name?: string;
+  time_updated?: string;
+  to_chat_room_id?: string;
+  state?: { name: string };
+};
 
 export function LoginEndpoint(data: LoginData) {
   const promise = axios.post(`${BACKEND_URL}/users/auth/jwt/login`, data, {
@@ -311,12 +326,14 @@ export async function ExportEndpoint(document_id: string, order_type: string) {
       responseType: "blob",
     });
   } else {
-    promise = axios.get(`${BACKEND_URL}/orders/${order_type}/export/${document_id}`, {
-      headers: { Authorization: getCookie("token") },
-      responseType: "blob",
-    });
+    promise = axios.get(
+      `${BACKEND_URL}/orders/${order_type}/export/${document_id}`,
+      {
+        headers: { Authorization: getCookie("token") },
+        responseType: "blob",
+      }
+    );
   }
-
 
   const response = toast.promise(promise, {
     loading: "Загрузка...",
@@ -328,9 +345,12 @@ export async function ExportEndpoint(document_id: string, order_type: string) {
 }
 
 export async function GetActions(order_id: string) {
-  const promise = axios.get<GetActionsType[]>(`${BACKEND_URL}/orders/actions/${order_id}`, {
-    headers: { Authorization: getCookie("token") },
-  });
+  const promise = axios.get<GetActionsType[]>(
+    `${BACKEND_URL}/orders/actions/${order_id}`,
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
 
   const response = toast.promise(promise, {
     loading: "Загрузка...",
@@ -356,9 +376,59 @@ export async function GetMessagesEndpoint() {
 }
 
 export async function GetMessagesOrderEndpoint(order_id: string) {
-  const promise = axios.get<getMessagesType[]>(`${BACKEND_URL}/chat/messages/${order_id}`, {
-    headers: { Authorization: getCookie("token") },
+  const promise = axios.get<getMessagesType[]>(
+    `${BACKEND_URL}/chat/messages/${order_id}`,
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
   });
+
+  return response;
+}
+
+export async function GetNotificationsEndpoint() {
+  const promise = axios.get<getNotificationsType[]>(
+    `${BACKEND_URL}/notifications/`,
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function ReadOneNotificationEndpoint(id: string) {
+  const promise = axios.post(
+    `${BACKEND_URL}/notifications/read/${id}`,
+    {},
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
+
+  return promise;
+}
+
+export async function ReadAllNotificationsEndpoint() {
+  const promise = axios.post(
+    `${BACKEND_URL}/notifications/read`,
+    {},
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
 
   const response = toast.promise(promise, {
     loading: "Загрузка...",
