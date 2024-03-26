@@ -10,8 +10,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const segment = useSelectedLayoutSegment();
-  const pathname = usePathname()
-  if (pathname.startsWith("/dashboard/orders/") && pathname.split("/").length == 4) {
+  const pathname = usePathname();
+  if (
+    pathname.startsWith("/dashboard/orders/") &&
+    pathname.split("/").length == 4
+  ) {
     return (
       <section className="overflow-clip">
         <Navbar selectedItem={NavbarLinkEnum.orders} />
@@ -26,7 +29,7 @@ export default function DashboardLayout({
     segment == NavbarLinkEnum.orders ||
     segment == NavbarLinkEnum.transactions ||
     segment == NavbarLinkEnum.neworder ||
-    segment == NavbarLinkEnum.organizations ||
+    segment == NavbarLinkEnum.organization ||
     segment == NavbarLinkEnum.statistics ||
     segment == NavbarLinkEnum.settings ||
     segment == NavbarLinkEnum.logout ||

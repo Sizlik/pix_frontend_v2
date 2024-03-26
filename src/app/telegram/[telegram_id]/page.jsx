@@ -4,10 +4,12 @@ import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { getCookie } from "cookies-next";
-import { PasswordIcon, PixInput, PixSumbitInput } from "../../../components/old/inputs";
+import {
+  PasswordIcon,
+  PixInput,
+  PixSumbitInput,
+} from "../../../components/old/inputs";
 import { LoginEndpoint } from "@/routes/routes";
-
-
 
 export default function TelegramLogin({ params }) {
   const [eye, setEye] = useState(false);

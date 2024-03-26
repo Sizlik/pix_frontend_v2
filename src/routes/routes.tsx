@@ -126,6 +126,21 @@ export type getNotificationsType = {
   state?: { name: string };
 };
 
+type GetOrganizationOrdersType = {
+  user: { email: string };
+  orders: GetOrdersType[];
+};
+
+export type GetOrganizationUserType = {
+  phone_number: string;
+  balance: number;
+  first_name: string;
+  organization_id: string;
+  email: string;
+  is_organization_user: boolean;
+  last_name: string;
+};
+
 export function LoginEndpoint(data: LoginData) {
   const promise = axios.post(`${BACKEND_URL}/users/auth/jwt/login`, data, {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -145,6 +160,20 @@ export function LoginEndpoint(data: LoginData) {
 
 export function RegisterEndpoint(data: RegisterData) {
   const promise = axios.post(`${BACKEND_URL}/users/auth/register`, data);
+
+  const response = toast.promise(promise, {
+    loading: "Отправляем...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export function RegisterOrganizationUserEndpoint(data: RegisterData) {
+  const promise = axios.post(`${BACKEND_URL}/organizations/users/`, data, {
+    headers: { Authorization: getCookie("token") },
+  });
 
   const response = toast.promise(promise, {
     loading: "Отправляем...",
@@ -425,6 +454,58 @@ export async function ReadAllNotificationsEndpoint() {
   const promise = axios.post(
     `${BACKEND_URL}/notifications/read`,
     {},
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function CreateOrganizationEndpoint() {
+  const promise = axios.post(
+    `${BACKEND_URL}/organizations/`,
+    {},
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function GetOrganizationOrders() {
+  const promise = axios.get<GetOrganizationOrdersType[]>(
+    `${BACKEND_URL}/organizations/orders/`,
+    {
+      headers: { Authorization: getCookie("token") },
+    }
+  );
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function GetOrganizationUsers(organization_id: string) {
+  const promise = axios.get<GetOrganizationUserType[]>(
+    `${BACKEND_URL}/organizations/users/`,
     {
       headers: { Authorization: getCookie("token") },
     }
