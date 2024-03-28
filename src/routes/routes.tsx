@@ -21,6 +21,14 @@ type RegisterData = {
   is_verified: boolean;
 };
 
+type UpdateUserData = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  password?: string;
+};
+
 type TokenData = {
   token: string;
 };
@@ -515,6 +523,37 @@ export async function GetOrganizationUsers(organization_id: string) {
     loading: "Загрузка...",
     success: "Успешно!",
     error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export async function UpdateUserEndpoint(data: UpdateUserData) {
+  const promise = axios.patch(`${BACKEND_URL}/users/users/me`, data, {
+    headers: { Authorization: getCookie("token") },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Обновляем...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+export function CheckPassword(data: LoginData) {
+  const promise = axios.post(`${BACKEND_URL}/users/auth/jwt/login`, data, {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Проверяем...",
+    success: (response) => {
+      setCookie("token", `Bearer ${response.data.access_token}`);
+      return "Успешно!";
+    },
+    error: "Не правильный пароль!",
   });
 
   return response;

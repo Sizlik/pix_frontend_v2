@@ -103,7 +103,6 @@ export default function Navbar({
           title: "Настройки",
           link: NavbarLinkEnum.settings,
           icon: <Gear />,
-          isBlocked: true,
           setIsOpened: setIsOpened,
         },
         {
