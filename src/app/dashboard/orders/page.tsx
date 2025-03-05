@@ -121,7 +121,7 @@ export default function Orders() {
             delivered_sum: item.shippedSum / 100,
             name: item.name,
             payed_sum: item.payedSum / 100,
-            state: item.state.name,
+            state: item.state?.name || "Удалён",
             sum: item.sum / 100,
           };
         })
