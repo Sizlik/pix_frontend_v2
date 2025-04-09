@@ -4,7 +4,7 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  if (searchParams.has("_rsc")) {
+  if (searchParams.get("_rsc")) {
     return NextResponse.next();
   }
 
