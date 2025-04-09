@@ -3,6 +3,11 @@ import { cookies } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  if (searchParams.has("_rsc")) {
+    return NextResponse.next();
+  }
+
   const token = cookies().get("token")?.value;
   if (token) {
     const userData = await CheckToken({ token: token });

@@ -1,4 +1,3 @@
-import { CheckToken } from "@/routes/routes";
 import { getCookie } from "cookies-next";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
