@@ -3,10 +3,8 @@ import { cookies } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  console.log(searchParams.get("_rsc"));
+  console.log(request.url);
 
-  
   const token = cookies().get("token")?.value;
   if (token) {
     const userData = await CheckToken({ token: token });
@@ -25,6 +23,7 @@ export const config = {
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
         { type: 'header', key: 'purpose', value: 'prefetch' },
+        { type: 'header', key: 'Next-Router-State-Tree'},
       ],
     }
   ]
