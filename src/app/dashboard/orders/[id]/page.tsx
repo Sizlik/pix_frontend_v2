@@ -557,6 +557,7 @@ function DownloadDocumentCellRenderer(
   };
   return (
     <Link
+      prefetch={true}
       className="text-[#2E90FA] hover:underline transition-all"
       href="#"
       onClick={handleDownload}

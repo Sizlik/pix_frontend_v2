@@ -11,7 +11,7 @@ export default function Dashboard() {
         <div className="lg:flex flex-row lg:justify-between gap-4">
           <div className="lg:max-w-[500px] lg:mt-0 mt-4">
             <h1 className="text-1xl font-bold">Бот в телеграм</h1>
-            <div className="mt-4">У нас появился бот в телеграм. Он присылает информацию по заказу, когда заказ меняет статус.<br /> Чтобы подключить бота, перейдите по ссылке и следуйте инструкциям в боте:<br /> <Link className="text-blue-400 hover:underline" href="https://t.me/pix_logistic_bot">https://t.me/pix_logistic_bot</Link></div>
+            <div className="mt-4">У нас появился бот в телеграм. Он присылает информацию по заказу, когда заказ меняет статус.<br /> Чтобы подключить бота, перейдите по ссылке и следуйте инструкциям в боте:<br /> <Link prefetch={true} className="text-blue-400 hover:underline" href="https://t.me/pix_logistic_bot">https://t.me/pix_logistic_bot</Link></div>
           </div>
           <div className="lg:max-w-[500px] lg:text-center lg:mt-0 mt-4">
             <h1 className="text-1xl font-bold">Для новых пользователей</h1>

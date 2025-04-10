@@ -3,6 +3,7 @@ import Link from "next/link";
 export default function Mail({ fill }: { fill?: string }) {
   return (
     <Link
+      prefetch={true}
       href="mailto:info@pixlogistic.com"
       className={`hover:scale-110 transition-all`}
     >

@@ -504,6 +504,7 @@ function OrderLink(props: CustomCellRendererProps<OrdersGrid>) {
   console.log(props);
   return (
     <Link
+      prefetch={true}
       className="text-[#2E90FA] hover:underline transition-all"
       href={`/dashboard/orders/${props.data!.id}`}
     >

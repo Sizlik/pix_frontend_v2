@@ -3,6 +3,7 @@ import Link from "next/link";
 export default function Telegram({ fill }: { fill?: string }) {
   return (
     <Link
+      prefetch={true}
       href="https://t.me/pixlogistic"
       className={`hover:scale-110 transition-all`}
     >

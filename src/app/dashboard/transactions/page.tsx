@@ -112,6 +112,7 @@ export default function Transactions() {
 function OrderLink(props: CustomCellRendererProps<TransactionsGrid>) {
   return (
     <Link
+      prefetch={true}
       className="text-[#2E90FA] hover:underline transition-all"
       href={`/dashboard/orders/${props.data!.order}`}
     >

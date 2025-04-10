@@ -211,6 +211,7 @@ function NavItem({
     );
   return (
     <Link
+      prefetch={true}
       href={`/dashboard/${link}`}
       className={`${selected ? "bg-[#444CE7] text-white" : `${color && `text-[#F04438]`} ${"hover:bg-slate-300"}`} rounded-md px-8 py-2 transition-all flex items-center gap-3`}
       onClick={() => setIsOpened(false)}
