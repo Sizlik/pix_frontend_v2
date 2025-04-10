@@ -5,9 +5,7 @@ import { NextResponse, NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   console.log(searchParams.get("_rsc"));
-  // if (search.get("_rsc")) {
-  //   return NextResponse.next();
-  // }
+
   
   const token = cookies().get("token")?.value;
   if (token) {
@@ -21,5 +19,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/dashboard/orders",
+  matcher: "/dashboard/:path*",
 };
