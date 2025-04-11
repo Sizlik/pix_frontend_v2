@@ -214,7 +214,8 @@ export async function CheckToken(data: TokenData) {
     .catch((error) => {
       return;
     });
-  setCookie("user", JSON.stringify(response))
+  const userData = encodeURIComponent(JSON.stringify(response));
+  document.cookie = `user=${userData}; path=/; max-age=${60 * 60 * 24 * 7}`;
   return response;
 }
 

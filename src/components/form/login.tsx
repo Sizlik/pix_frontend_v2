@@ -1,7 +1,9 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { PixInput, PixInputMask } from "../inputs/pixInputs";
-import { LoginEndpoint } from "@/routes/routes";
+import { CheckToken, LoginEndpoint } from "@/routes/routes";
 import { useRouter } from "next/navigation";
+import { setConfig } from "next/config";
+import { getCookie, setCookie } from "cookies-next";
 
 type LoginInputs = {
   email: string;
@@ -28,7 +30,13 @@ export default function LoginForm({
       username: data.email,
       password: data.password,
     }).then((response) => {
-      if (response.status == 200) router.push("/dashboard/orders");
+      if (response.status == 200){
+        const token = getCookie("token")
+        if (token) {
+          CheckToken({ token })
+          router.push("/dashboard/orders");
+        }
+      } 
     });
   };
 
