@@ -214,6 +214,7 @@ export async function CheckToken(data: TokenData) {
     .catch((error) => {
       return;
     });
+  setCookie("user", JSON.stringify(response))
   return response;
 }
 
