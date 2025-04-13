@@ -7,9 +7,10 @@ import Mail from "../../public/Mail";
 import { motion } from "framer-motion";
 import AuthForm from "@/components/form/authForm";
 import { useRouter } from "next/navigation";
-import { deleteCookie, getCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { CheckToken } from "@/routes/routes";
 import { useEffect } from "react";
+import { cookies } from "next/headers";
 
 export default function Home() {
   const router = useRouter();
@@ -17,8 +18,9 @@ export default function Home() {
   useEffect(() => {
     if (token) {
       CheckToken({ token }).then((response) => {
-        if (response) router.push("/dashboard/orders");
-        else {
+        if (response) {
+          router.push("/dashboard/orders");
+        } else {
           deleteCookie("token");
         }
       });
