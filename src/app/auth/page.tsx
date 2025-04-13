@@ -42,7 +42,7 @@ export default function Home() {
         </motion.div>
         <div className="text-center text-white mt-8">
           <h1 className="font-bold text-6xl">PIX Logistic</h1>
-          <h2 className="text-xl mt-4">Доставка товаров из европы в Россию</h2>
+          <h2 className="text-xl mt-4">Доставка товаров из Европы в Россию</h2>
         </div>
         <div className="flex mt-16 gap-8 justify-center">
           <Telegram />

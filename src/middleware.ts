@@ -7,10 +7,15 @@ export async function middleware(request: NextRequest) {
 
   const token = cookies().get("token")?.value;
   if (token) {
-    const userData = await CheckToken({ token: token });
-    const response = NextResponse.next();
-    response.cookies.set("user", JSON.stringify(userData));
-    if (userData) return response;
+    try {
+      const userData = await CheckToken({ token: token });
+      const response = NextResponse.next();
+      response.cookies.set("user", JSON.stringify(userData));
+      if (userData) return response;
+    } catch (error) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
   }
   
   return NextResponse.redirect(new URL("/", request.url));
