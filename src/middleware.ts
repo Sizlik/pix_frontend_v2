@@ -8,14 +8,15 @@ export async function middleware(request: NextRequest) {
   const token = cookies().get("token")?.value;
   if (token) {
     try {
-      const userData = await CheckToken({ token: token });
+      const userData = await CheckToken({ token: token }, false);
       const response = NextResponse.next();
       response.cookies.set("user", JSON.stringify(userData));
+      if (userData.is_verified == false) return NextResponse.redirect(new URL("/verify", request.url));
       if (userData) return response;
     } catch (error) {
+      console.log("error: " + error)
       return NextResponse.redirect(new URL("/", request.url));
     }
-
   }
   
   return NextResponse.redirect(new URL("/", request.url));

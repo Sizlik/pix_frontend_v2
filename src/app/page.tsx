@@ -18,7 +18,8 @@ export default function Home() {
   useEffect(() => {
     if (token) {
       CheckToken({ token }).then((response) => {
-        if (response) {
+        if (response && response.is_verified == false) router.push("/verify")
+        else if (response) {
           router.push("/dashboard/orders");
         } else {
           deleteCookie("token");

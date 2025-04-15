@@ -33,8 +33,11 @@ export default function LoginForm({
       if (response.status == 200){
         const token = getCookie("token")
         if (token) {
-          CheckToken({ token })
-          router.push("/dashboard/orders");
+          CheckToken({ token }).then((result) => {
+            if (result.is_verified == false) router.push("verify")
+            else router.push("/dashboard/orders");
+          })
+
         }
       } 
     });

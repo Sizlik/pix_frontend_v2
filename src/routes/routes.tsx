@@ -192,7 +192,7 @@ export function RegisterOrganizationUserEndpoint(data: RegisterData) {
   return response;
 }
 
-export async function CheckToken(data: TokenData) {
+export async function CheckToken(data: TokenData, isClient = true) {
   const fetchOptions = {
     method: "GET",
     headers: {
@@ -214,8 +214,8 @@ export async function CheckToken(data: TokenData) {
     .catch((error) => {
       return;
     });
-  const userData = encodeURIComponent(JSON.stringify(response));
-  document.cookie = `user=${userData}; path=/; max-age=${60 * 60 * 24 * 7}`;
+  const userData = encodeURIComponent(JSON.stringify(await response));
+  if (isClient && userData) document.cookie = `user=${userData}; path=/; max-age=${60 * 60 * 24 * 7}`;
   return response;
 }
 
@@ -560,3 +560,39 @@ export function CheckPassword(data: LoginData) {
 
   return response;
 }
+
+
+export function VerifyToken(code: string, email: string) {
+  const promise = axios.post(`${BACKEND_URL}/users/auth/verify`, {token: code, email: email}, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Проверяем...",
+    success: (response) => {
+      return "Успешно!";
+    },
+    error: "Не правильный код!",
+  });
+
+  return response;
+}
+
+
+export function RequestVerify(email: string) {
+  const promise = axios.post(`${BACKEND_URL}/users/auth/request-verify-token`, {email}, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Отправляем...",
+    success: (response) => {
+      return "Успешно!";
+    },
+    error: "Произошла ошибка!",
+  });
+
+  return response;
+}
+
+

@@ -9,48 +9,44 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const segment = useSelectedLayoutSegment();
-  const pathname = usePathname();
-  if (
-    pathname.startsWith("/dashboard/orders/") &&
-    pathname.split("/").length == 4
-  ) {
-    return (
-      <section className="overflow-clip">
-        <Navbar selectedItem={NavbarLinkEnum.orders} />
-        <Balance />
-        {children}
-      </section>
-    );
-  }
+    const segment = useSelectedLayoutSegment();
+    const pathname = usePathname();
 
-  if (
-    segment == NavbarLinkEnum.main ||
-    segment == NavbarLinkEnum.orders ||
-    segment == NavbarLinkEnum.transactions ||
-    segment == NavbarLinkEnum.neworder ||
-    segment == NavbarLinkEnum.organization ||
-    segment == NavbarLinkEnum.statistics ||
-    segment == NavbarLinkEnum.settings ||
-    segment == NavbarLinkEnum.logout ||
-    segment == NavbarLinkEnum.messages
-  ) {
-    return (
-      <section className="overflow-clip">
-        <Navbar selectedItem={segment} />
-        <Balance />
-        <SupportChat />
-        {children}
-      </section>
-    );
-  }
+    if (pathname.startsWith("/dashboard/orders/") && pathname.split("/").length == 4) {return (
+          <section className="overflow-clip">
+            <Navbar selectedItem={NavbarLinkEnum.orders} />
+            <Balance />{children}
+          </section>
+        );
+      }
 
-  return (
-    <section>
-      <Navbar />
-      <Balance />
-      <SupportChat />
-      {children}
-    </section>
-  );
+      if (
+        segment == NavbarLinkEnum.main ||
+        segment == NavbarLinkEnum.orders ||
+        segment == NavbarLinkEnum.transactions ||
+        segment == NavbarLinkEnum.neworder ||
+        segment == NavbarLinkEnum.organization ||
+        segment == NavbarLinkEnum.statistics ||
+        segment == NavbarLinkEnum.settings ||
+        segment == NavbarLinkEnum.logout ||
+        segment == NavbarLinkEnum.messages
+      ) {
+        return (
+          <section className="overflow-clip">
+            <Navbar selectedItem={segment} />
+            <Balance />
+            <SupportChat />
+            {children}
+          </section>
+        );
+      }
+
+      return (
+        <section>
+          <Navbar />
+          <Balance />
+          <SupportChat />
+          {children}
+        </section>
+      );
 }

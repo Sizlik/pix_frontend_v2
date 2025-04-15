@@ -6,7 +6,9 @@ import { useEffect } from "react";
 export default function Logout() {
   const router = useRouter();
   useEffect(() => {
-    LogoutEndpoint().then(() => {
+    LogoutEndpoint().catch(() => {
+      router.replace("/");
+    }).then(() => {
       router.replace("/");
     });
   }, []);
