@@ -37,6 +37,7 @@ export default function ConfirmEmailPage() {
     }, [resendTimer]);
 
     const onSubmit: SubmitHandler<verifyInput> = async (data) => {
+        data.code = data.code.replace(" ", "")
         if (data.code.length !== 6) {
             setMessage("Введите корректный код");
             return;

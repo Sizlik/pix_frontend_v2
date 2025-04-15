@@ -596,3 +596,35 @@ export function RequestVerify(email: string) {
 }
 
 
+export function ForgotPassword(email: string) {
+  const promise = axios.post(`${BACKEND_URL}/users/auth/forgot-password`, {email}, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Отправляем...",
+    success: (response) => {
+      return "Успешно!";
+    },
+    error: "Произошла ошибка!",
+  });
+
+  return response;
+}
+
+export function ResetPassword(code: string, email: string, password: string) {
+  const promise = axios.post(`${BACKEND_URL}/users/auth/reset-password`, {token: code, email: email, password: password}, {
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Проверяем...",
+    success: (response) => {
+      return "Успешно!";
+    },
+    error: "Произошла ошибка!",
+  });
+
+  return response;
+}
+
