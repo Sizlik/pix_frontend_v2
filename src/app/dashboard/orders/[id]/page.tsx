@@ -1,7 +1,6 @@
 "use client";
 import Grid from "@/components/grid/grid";
 import {
-  PixInput,
   PixSearch,
   PixTextArea,
 } from "@/components/inputs/pixInputs";

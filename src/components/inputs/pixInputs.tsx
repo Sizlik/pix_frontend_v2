@@ -28,8 +28,6 @@ interface PixSearchProps {
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-("сделай компонент Form, в который будешь прокидывать в чилдрен поля форм const formMethods = methods || useForm({ shouldFocusError: false, // true = первое поле с ошибкой будет в фокусе ...config, }); return (<> {isDev && <DevTool placement={placement} control={formMethods.control} />} <FormProvider {...formMethods}> <form {...props} onSubmit={formMethods.handleSubmit(onSubmit)} /> </FormProvider> </> );");
-
 export const PixInput = <T extends FieldValues>({
   className,
   type,

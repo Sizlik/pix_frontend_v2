@@ -1,18 +1,12 @@
 "use client";
-import Grid from "@/components/grid/grid";
 import {
-  PixInput,
   PixSearch,
-  PixTextArea,
 } from "@/components/inputs/pixInputs";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ColDef, IRowNode } from "ag-grid-community";
 import { Search, Square } from "react-bootstrap-icons";
-import { useForm } from "react-hook-form";
-import PixButton from "@/components/button/button";
 import {
   AgGridReact,
-  AgGridReactProps,
   CustomCellRendererProps,
 } from "ag-grid-react";
 import Link from "next/link";

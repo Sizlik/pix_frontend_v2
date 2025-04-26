@@ -5,7 +5,7 @@ import {
   XCircleFill,
 } from "react-bootstrap-icons";
 import { AnimatePresence, motion } from "framer-motion";
-import { PixInput, PixTextArea } from "../inputs/pixInputs";
+import { PixTextArea } from "../inputs/pixInputs";
 import { useForm } from "react-hook-form";
 import { getCookie } from "cookies-next";
 import { GetMessagesEndpoint, getMessagesType } from "@/routes/routes";
