@@ -277,6 +277,21 @@ export async function GetTransactions() {
   return response;
 }
 
+export async function GetOperations() {
+  const promise = axios.get(`${BACKEND_URL}/users/operations`, {
+    headers: { Authorization: getCookie("token") },
+  });
+
+  const response = toast.promise(promise, {
+    loading: "Загрузка...",
+    success: "Успешно!",
+    error: "Ошибка!",
+  });
+
+  return response;
+}
+
+
 export async function LogoutEndpoint() {
   const promise = axios.post(
     `${BACKEND_URL}/users/auth/jwt/logout`,
@@ -628,3 +643,8 @@ export function ResetPassword(code: string, email: string, password: string) {
   return response;
 }
 
+
+export function VaultCourses() {
+  const promise = axios.get(`${BACKEND_URL}/payment/vault_courses`)
+  return promise
+}

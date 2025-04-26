@@ -20,7 +20,7 @@ export enum NavbarLinkEnum {
   main = "",
   neworder = "neworder",
   orders = "orders",
-  transactions = "transactions",
+  transactions = "operations",
   organization = "organization",
   settings = "settings",
   statistics = "statistics",
@@ -83,7 +83,7 @@ export default function Navbar({
           setIsOpened: setIsOpened,
         },
         {
-          title: "Транзакции",
+          title: "Операции",
           link: NavbarLinkEnum.transactions,
           icon: <Journals />,
           setIsOpened: setIsOpened,
