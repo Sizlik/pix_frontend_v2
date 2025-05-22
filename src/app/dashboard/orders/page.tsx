@@ -62,34 +62,34 @@ export default function Orders() {
         maxNumConditions: 20,
       },
     },
-    {
-      field: "count",
-      resizable: false,
-      minWidth: 110,
-      width: 110,
-      headerName: "Количество",
-    },
+    // {
+    //   field: "count",
+    //   resizable: false,
+    //   minWidth: 110,
+    //   width: 110,
+    //   headerName: "Количество",
+    // },
     {
       field: "sum",
       resizable: false,
       minWidth: 120,
       width: 120,
-      headerName: "Сумма",
+      headerName: "Итоговая стоимость",
     },
-    {
-      field: "payed_sum",
-      resizable: false,
-      minWidth: 120,
-      width: 120,
-      headerName: "Оплачено",
-    },
-    {
-      field: "delivered_sum",
-      resizable: false,
-      minWidth: 120,
-      width: 120,
-      headerName: "Отправлено",
-    },
+    // {
+    //   field: "payed_sum",
+    //   resizable: false,
+    //   minWidth: 120,
+    //   width: 120,
+    //   headerName: "Оплачено",
+    // },
+    // {
+    //   field: "delivered_sum",
+    //   resizable: false,
+    //   minWidth: 120,
+    //   width: 120,
+    //   headerName: "Отправлено",
+    // },
     {
       field: "created_at",
       resizable: false,
@@ -279,8 +279,8 @@ export default function Orders() {
   };
 
   return (
-    <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
-      <div className="lg:h-[80vh] w-screen bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
+    <div className="w-full lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
+      <div className="w-full lg:h-[80vh] bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
         <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
           <PixSearch
             icon={<Search />}

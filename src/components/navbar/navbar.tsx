@@ -83,7 +83,7 @@ export default function Navbar({
           setIsOpened: setIsOpened,
         },
         {
-          title: "Операции",
+          title: "Финансы",
           link: NavbarLinkEnum.transactions,
           icon: <Journals />,
           setIsOpened: setIsOpened,
@@ -123,61 +123,87 @@ export default function Navbar({
     },
   ];
   return (
-    <AnimatePresence>
-      {isOpened ? (
-        <motion.div
-          key={"opened"}
-          initial={{ x: -1100 }}
-          animate={{ x: 0 }}
-          exit={{ x: -1100 }}
-          transition={{ duration: 0.5 }}
-          className="fixed z-10 bg-white rounded-r-xl h-full"
-        >
-          <div className="lg:w-72 p-4 w-screen">
-            <div className="relative flex items-center">
-              <OpenCloseButton
-                onClick={() => setIsOpened(false)}
-                className="absolute lg:-right-10 right-0 cursor-pointer"
-              />
-              <div className="flex items-center">
-                <Logo width={64} height={64} />
-                <h1 className="font-bold text-xl">PIX Logistic</h1>
-              </div>
+      <div
+          className="bg-white rounded-r-xl h-screen shadow-lg overflow-y-auto"
+      >
+        <div className="lg:w-72 p-4 min-h-screen">
+          <div className="sticky top-0 pt-2 pb-4 bg-white z-10">
+            <div className="flex items-center">
+              <Logo width={64} height={64}/>
+              <h1 className="font-bold text-xl">PIX Logistic</h1>
             </div>
-            {sections.map((section, index) => (
+          </div>
+          {sections.map((section, index) => (
               <div key={index} className="flex flex-col">
                 <p className="text-[#D3D3D3] mt-4">{section.title}</p>
                 <div className="flex flex-col text-[#565656] gap-1">
                   {section.items.map((item, index) => (
-                    <NavItem
-                      key={index}
-                      {...item}
-                      selected={item.link == selectedItem}
-                    />
+                      <NavItem
+                          key={index}
+                          {...item}
+                          selected={item.link == selectedItem}
+                      />
                   ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          key={"closed"}
-          initial={{ x: -1100 }}
-          animate={{ x: 0 }}
-          transition={{ duration: 0.5 }}
-          exit={{ x: -1100 }}
-          className="fixed z-10"
-        >
-          <div className="p-4 flex items-center h-24">
-            <OpenCloseButton
-              onClick={() => setIsOpened(true)}
-              className="absolute -scale-100 cursor-pointer"
-            />
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          ))}
+        </div>
+      </div>
+  // <AnimatePresence>
+  //   {isOpened ? (
+  //       <motion.div
+  //           key={"opened"}
+  //           initial={{x: -1100}}
+  //           animate={{x: 0}}
+  //           exit={{x: -1100}}
+  //           transition={{duration: 0.5}}
+  //           className="relative z-10 bg-white rounded-r-xl h-full"
+  //       >
+  //         <div className="lg:w-72 p-4 w-screen">
+  //           <div className="relative flex items-center">
+  //             <OpenCloseButton
+  //                 onClick={() => setIsOpened(false)}
+  //                 className="absolute lg:-right-10 right-0 cursor-pointer"
+  //             />
+  //             <div className="flex items-center">
+  //               <Logo width={64} height={64}/>
+  //               <h1 className="font-bold text-xl">PIX Logistic</h1>
+  //             </div>
+  //           </div>
+  //           {sections.map((section, index) => (
+  //               <div key={index} className="flex flex-col">
+  //                 <p className="text-[#D3D3D3] mt-4">{section.title}</p>
+  //                 <div className="flex flex-col text-[#565656] gap-1">
+  //                   {section.items.map((item, index) => (
+  //                       <NavItem
+  //                           key={index}
+  //                           {...item}
+  //                           selected={item.link == selectedItem}
+  //                       />
+  //                   ))}
+  //                 </div>
+  //               </div>
+  //           ))}
+  //         </div>
+  //       </motion.div>
+  //     ) : (
+  //       <motion.div
+  //         key={"closed"}
+  //         initial={{ x: -1100 }}
+  //         animate={{ x: 0 }}
+  //         transition={{ duration: 0.5 }}
+  //         exit={{ x: -1100 }}
+  //         className="fixed z-10"
+  //       >
+  //         <div className="p-4 flex items-center h-24">
+  //           <OpenCloseButton
+  //             onClick={() => setIsOpened(true)}
+  //             className="absolute -scale-100 cursor-pointer"
+  //           />
+  //         </div>
+  //       </motion.div>
+  //     )}
+  //   </AnimatePresence>
   );
 }
 

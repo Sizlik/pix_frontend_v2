@@ -43,8 +43,8 @@ export default function Messages() {
   }, []);
 
   return (
-    <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
-      <div className="lg:h-[80vh] w-screen bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 shadow-xl p-2">
+    <div className="w-full lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
+      <div className="lg:h-[80vh] w-full bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 shadow-xl p-2">
         <div className="flex justify-between">
           <h1 className="font-bold text-2xl">Оповещения</h1>
           <PixButton value="Прочитать всё" onClick={readAllHandle} />

@@ -38,8 +38,7 @@ export default function Transactions() {
   const ref = useRef<AgGridReact<PaymentRow>>(null);
   const [tabButton, setTabButton] = useState<string>(tabButtons[0]);
   const [colDefs, setColDefs] = useState<ColDef<PaymentRow>[]>([
-    { field: "name", headerName: "№ Платежа", minWidth: 100 },
-    { field: "moment", headerName: "Дата", minWidth: 120 },
+    { field: "sum", headerName: "Сумма", minWidth: 120 },
     { field: "type", headerName: "Тип", minWidth: 100,
       filter: true,
       filterParams: {
@@ -47,14 +46,13 @@ export default function Transactions() {
         maxNumConditions: 20,
       },
     },
-    { field: "sum", headerName: "Сумма", minWidth: 120 },
     {
       field: "order",
       headerName: "Заказ",
       minWidth: 180,
       cellRenderer: OrderLink,
     },
-    { field: "orderStatus", headerName: "Статус заказа", minWidth: 150 },
+    { field: "moment", headerName: "Дата", minWidth: 120 },
   ]);
   const [rowData, setRowData] = useState<PaymentRow[]>([]);
 
@@ -139,9 +137,9 @@ export default function Transactions() {
   }, []);
 
   return (
-      <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
+      <div className="w-full lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
         <div
-            className="lg:h-[80vh] w-screen bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
+            className="lg:h-[80vh] w-full bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
           <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
             <PixSearch
                 icon={<Search/>}
@@ -157,7 +155,7 @@ export default function Transactions() {
                 setState={setTabButton}
                 onClick={onClickTabButton}
             />
-            <h1 className="font-bold text-2xl">Мои операции</h1>
+            <h1 className="font-bold text-2xl">Мои финансы</h1>
           </div>
           <div className={`w-full lg:h-full h-[260px] ag-theme-quartz`}>
             <AgGridReact

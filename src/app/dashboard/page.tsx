@@ -5,8 +5,8 @@ import Mail from "../../../public/Mail";
 
 export default function Dashboard() {
   return (
-    <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
-      <div className="lg:h-[80vh] w-screen bg-white lg:rounded-2xl p-4 flex flex-col gap-2 shadow-xl">
+    <div className="w-full lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
+      <div className="lg:h-[80vh] w-full bg-white lg:rounded-2xl p-4 flex flex-col gap-2 shadow-xl">
         <div className="font-bold text-2xl">PIX Logistic</div>
         <div className="lg:flex flex-row lg:justify-between gap-4">
           <div className="lg:max-w-[500px] lg:mt-0 mt-4">
@@ -17,7 +17,7 @@ export default function Dashboard() {
             <h1 className="text-1xl font-bold">Для новых пользователей</h1>
             <div className="mt-4">Чтобы сделать заказ, откройте меню в левом верхнем углу и перейдите в раздел <span className="font-bold">Новый заказ</span>.</div>
             <div className="mt-4">Чтобы отследить заказ, откройте меню и перейдите в раздел <span className="font-bold">Мои заказы</span>, далее Вы можете перейти в сам заказ, нажав на его номер.</div>
-            <div className="mt-4">В разделе <span className="font-bold">Операции</span> Вы можете посмотреть свои операции по пополнению и списанию на заказы.</div>
+            <div className="mt-4">В разделе <span className="font-bold">Финансы</span> Вы можете посмотреть свои операции по пополнению и списанию на заказы.</div>
             <div className="mt-4">Если у вас есть общий вопрос по работе с сайтом, нажмите на иконку <span className="font-bold">Чата</span> в правом нижнем углу и задайте свой вопрос, наш менеджер ответит на него через некоторое время.</div>
             <div className="mt-4">Если у вас есть вопрос по заказу, перейдите в <span className="font-bold">нужный заказ</span> справа внизу будет раздел общения с вашим менеджером по заказу.</div>
           </div>

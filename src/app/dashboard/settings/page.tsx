@@ -80,8 +80,8 @@ export default function Settings() {
   }, [user]);
 
   return (
-    <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
-      <div className="lg:h-[80vh] w-screen bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 shadow-xl p-2 overflow-y-auto">
+    <div className="w-full lg:h-screen flex lg:flex-row flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:px-4">
+      <div className="lg:h-[80vh] w-full bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 shadow-xl p-2 overflow-y-auto">
         <h1 className="font-bold text-2xl w-full text-end">Настройки</h1>
         <form
           className="w-full h-full flex flex-col"

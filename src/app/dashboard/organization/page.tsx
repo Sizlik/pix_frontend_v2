@@ -350,7 +350,7 @@ export default function Organization() {
   };
   if (user?.organization_id)
     return (
-      <div className="lg:w-screen lg:h-screen flex lg:flex-row flex-col lg:gap-2 items-top lg:pt-24 pt-16 lg:px-4">
+      <div className="w-full lg:h-screen flex lg:flex-row flex-col lg:gap-2 items-top lg:pt-24 pt-16 lg:px-4">
         <div className="lg:h-[80vh] w-full bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 shadow-xl p-2">
           <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
             <PixSearch

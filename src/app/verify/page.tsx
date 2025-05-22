@@ -74,9 +74,9 @@ export default function ConfirmEmailPage() {
         try {
             if (!user?.email) return
             const res = await RequestVerify(user.email);
-            if (res.status == 200) {
+            if (res.status == 200 || res.status == 202) {
                 setResendTimer(60);
-                setMessage("📨 Код отправлен снова");
+                setMessage("📨 Код повторно отправлен");
             } else {
                 setMessage("⚠️ Не удалось отправить код");
             }

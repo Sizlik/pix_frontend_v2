@@ -4,7 +4,7 @@ import {
   PixSearch,
   PixTextArea,
 } from "@/components/inputs/pixInputs";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState, useRef } from "react";
 import {
   ColDef,
   GetRowIdParams,
@@ -29,6 +29,7 @@ import {
 } from "@/routes/routes";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next";
+import OrderOperationsSection from "./OrderOperations";
 
 interface OrderGrid {
   id?: number;
@@ -144,8 +145,11 @@ export default function MyOrder({ params }: { params: { id: string } }) {
   const getRowId = (params: GetRowIdParams<OrderGrid>) =>
     params.data.position_id;
 
+  // Fetch order data and messages
   useEffect(() => {
-    console.log("here");
+    console.log("Fetching order data");
+    
+    // Fetch order details
     GetOrder(params.id).then((response) => {
       setRowData(
         response.data.positions.rows.map((item, index) => {
@@ -184,6 +188,8 @@ export default function MyOrder({ params }: { params: { id: string } }) {
       setName(response.data.name);
       setState(response.data.state.name);
     });
+    
+    // Fetch actions
     GetActions(params.id).then((response) => {
       setActionRowData(
         response.data.map((item) => {
@@ -191,25 +197,53 @@ export default function MyOrder({ params }: { params: { id: string } }) {
         })
       );
     });
-    socket?.close();
-    // const newSocket = new WebSocket(
-    //   `ws://localhost:8000/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`
-    // );
-    const newSocket = new WebSocket(
+    
+    // Fetch messages
+    GetMessagesOrderEndpoint(params.id).then((response) => {
+      setMessages(response.data);
+    });
+  }, [params.id]);
+  
+  // Setup WebSocket in a separate useEffect to avoid infinite loops
+  const webSocketRef = useRef<WebSocket | null>(null);
+  
+  useEffect(() => {
+    console.log("Setting up WebSocket");
+    
+    // Close the previous socket if it exists
+    if (webSocketRef.current) {
+      webSocketRef.current.close();
+    }
+    
+    // Create a new WebSocket connection
+    const ws = new WebSocket(
       `wss://pixlogistic.com/api_v1/chat/ws?auth=${getCookie("token")!.split(" ")[1]}&room=${params.id}`
     );
-    newSocket.onmessage = (event: MessageEvent) => {
+    
+    // Store the WebSocket in the ref
+    webSocketRef.current = ws;
+    
+    // Set up the message handler
+    ws.onmessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
       setMessages((prev) => {
         if (prev) return [message, ...prev];
         else return [message];
       });
     };
-    setSocket(newSocket);
-    GetMessagesOrderEndpoint(params.id).then((response) => {
-      setMessages(response.data);
-    });
-  }, []);
+    
+    // Update the socket state (outside the socket message handler)
+    setSocket(ws);
+    
+    // Clean up on unmount
+    return () => {
+      console.log("Cleaning up WebSocket");
+      if (webSocketRef.current) {
+        webSocketRef.current.close();
+        webSocketRef.current = null;
+      }
+    };
+  }, [params.id]); // Only depend on params.id, not on socket
 
   const sendMessage = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -355,7 +389,7 @@ export default function MyOrder({ params }: { params: { id: string } }) {
   }, [state, params.id]);
   if (isFullScreen)
     return (
-      <div className="lg:w-screen lg:h-screen flex flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:p-4">
+      <div className="w-full lg:h-screen flex flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:p-4 overflow-y-auto">
         <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2 h-full">
           <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
             <PixSearch
@@ -387,45 +421,38 @@ export default function MyOrder({ params }: { params: { id: string } }) {
               <h1 className="font-bold text-2xl">Заказ #{name}</h1>
             )}
           </div>
-          {state == "Ожидает подтверждения клиента" ? (
-            <Grid
-              colDefs={colDefs}
-              quickFilterText={search}
-              rowData={rowData}
-              getRowId={getRowId}
-              onCellValueChanged={handleEditCount}
-              className="w-full lg:h-full h-[260px]"
-            />
-          ) : (
-            <Grid
-              colDefs={colDefs}
-              quickFilterText={search}
-              rowData={rowData}
-              getRowId={getRowId}
-              onCellValueChanged={handleEditCount}
-              className="w-full lg:h-full h-[260px]"
-            />
-          )}
+          <Grid
+            colDefs={colDefs}
+            quickFilterText={search}
+            rowData={rowData}
+            getRowId={getRowId}
+            onCellValueChanged={handleEditCount}
+            className="w-full lg:h-full h-[260px]"
+          />
         </div>
       </div>
     );
+  
   return (
-    <div className="lg:w-screen lg:h-screen lg:grid lg:grid-cols-2 lg:grid-rows-2 flex flex-col lg:gap-2 justify-center items-top lg:pt-24 pt-16 lg:p-4">
-      <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
-        <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
-          <PixSearch
-            onChange={onChangeSearch}
-            icon={<Search />}
-            inputClassName="w-[300px]"
-            className=""
-            placeholder="Поиск по заказу"
-          />
-          <button
-            onClick={() => setIsFullScreen(true)}
-            className="hover:underline cursor-pointer"
-          >
-            Развернуть
-          </button>
+    <div className="w-full h-full flex flex-col lg:gap-4 justify-center items-top lg:pt-24 pt-16 lg:p-4 overflow-y-auto">
+      {/* Верхняя панель с заголовком заказа */}
+      <div className="bg-white lg:rounded-2xl lg:p-4 p-2 shadow-xl">
+        <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsFullScreen(true)}
+              className="hover:underline cursor-pointer"
+            >
+              Развернуть
+            </button>
+            <PixSearch
+              onChange={onChangeSearch}
+              icon={<Search/>}
+              inputClassName="w-[300px]"
+              className=""
+              placeholder="Поиск по заказу"
+            />
+          </div>
           {state == "Ожидает подтверждения клиента" ? (
             <div className="flex gap-2">
               <PixButton
@@ -442,78 +469,64 @@ export default function MyOrder({ params }: { params: { id: string } }) {
             <h1 className="font-bold text-2xl">Заказ #{name}</h1>
           )}
         </div>
-        {state == "Ожидает подтверждения клиента" ? (
-          <Grid
-            colDefs={colDefs}
-            quickFilterText={search}
-            rowData={rowData}
-            getRowId={getRowId}
-            onCellValueChanged={handleEditCount}
-            className="w-full lg:h-full h-[260px]"
-          />
-        ) : (
-          <Grid
-            colDefs={colDefs}
-            quickFilterText={search}
-            rowData={rowData}
-            getRowId={getRowId}
-            onCellValueChanged={handleEditCount}
-            className="w-full lg:h-full h-[260px]"
-          />
-        )}
-      </div>
-      <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
-        <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
-          <PixSearch
-            icon={<Search />}
-            onChange={onChangeSearchActions}
-            inputClassName="w-[300px]"
-            className=""
-            placeholder="Поиск по действиям"
-          />
-          <h1 className="font-bold text-2xl">Действия</h1>
+        
+        {/* Документы заказа в правой части */}
+        <div className="flex justify-end mb-2">
+          <div className="max-w-md">
+            <h2 className="font-semibold text-lg mb-1">Документы заказа</h2>
+            <div className="bg-gray-50 p-2 rounded">
+              {documentRowData.map((doc, index) => (
+                <div key={index} className="flex justify-between items-center py-1">
+                  <span>{doc.document_name}</span>
+                  <Link
+                    prefetch={true}
+                    className="text-[#2E90FA] hover:underline transition-all ml-4"
+                    href="#"
+                    onClick={() => ExportEndpoint(doc.document_id!, doc.document_type!).then(
+                      (response) => {
+                        const file = new Blob([response.data], { type: "application/pdf" });
+                        const fileURL = URL.createObjectURL(file);
+                        const pdfWindow = window.open();
+                        pdfWindow!.location.href = fileURL;
+                      }
+                    )}
+                  >
+                    Скачать
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <Grid
-          colDefs={actionColDefs}
-          rowData={actionRowData}
-          quickFilterText={searchActions}
-          className="w-full lg:h-full h-[260px]"
-        />
+        
+        {/* Позиции заказа на всю ширину */}
+        <div className="w-full">
+          <h2 className="font-semibold text-lg mb-1">Позиции заказа</h2>
+          <Grid
+            colDefs={colDefs}
+            quickFilterText={search}
+            rowData={rowData}
+            getRowId={getRowId}
+            onCellValueChanged={handleEditCount}
+            className="w-full h-[300px]"
+          />
+        </div>
       </div>
 
-      <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
-        <div className="flex lg:flex-row flex-col-reverse justify-between items-center lg:gap-0 gap-2">
-          <PixSearch
-            icon={<Search />}
-            onChange={onChangeSearchDocument}
-            inputClassName="w-[300px]"
-            className=""
-            placeholder="Поиск по документм"
-          />
-          <h1 className="font-bold text-2xl">Документы</h1>
+      {/* Комментарии по заказу */}
+      <div className="bg-white lg:rounded-2xl lg:p-4 p-2 shadow-xl">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="font-bold text-xl">Комментарии по заказу</h2>
         </div>
-        <Grid
-          colDefs={documentColDefs}
-          rowData={documentRowData}
-          quickFilterText={searchDocument}
-          className="w-full lg:h-full h-[260px]"
-        />
-      </div>
-      <div className="bg-white lg:rounded-2xl lg:p-4 flex flex-col gap-2 lg:justify-center shadow-xl p-2">
-        <div className="flex lg:flex-row flex-col-reverse justify-end items-center lg:gap-0 gap-2">
-          <h1 className="font-bold text-2xl">Чат по заказу</h1>
-        </div>
-        <div className="h-[calc(100%-50px)] bg-gradient-radial from-[#ACCBEE] to-[#E7F0FD] rounded-xl">
-          <div className="h-[calc(100%-100px)] flex flex-col-reverse gap-2 py-2 overflow-y-auto scrollbar max-h-[50vh]">
-            {messages?.map((item, index) => {
-              return (
-                <Message
-                  key={index}
-                  isSender={item.first_name != "bot"}
-                  message={item.message}
-                />
-              );
-            })}
+        <div className="bg-gradient-radial from-[#ACCBEE] to-[#E7F0FD] rounded-xl">
+          <div className="h-[calc(300px-100px)] flex flex-col-reverse gap-2 py-2 overflow-y-auto scrollbar">
+            {messages?.map((item, index) => (
+              <Message
+                key={index}
+                isSender={item.first_name != "bot"}
+                message={item.message}
+              />
+            ))}
             <Message
               isSender={false}
               message="Здравствуйте! Если у вас возникли какие-либо вопросы, задайте их в этом чате."
@@ -535,6 +548,14 @@ export default function MyOrder({ params }: { params: { id: string } }) {
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      {/* Транзакции по заказу */}
+      <div className="bg-white lg:rounded-2xl lg:p-4 p-2 shadow-xl">
+        <h2 className="font-bold text-xl mb-2">Транзакции по заказу</h2>
+        <div className="w-full h-[300px]">
+          <OrderOperationsSection orderId={params.id} />
         </div>
       </div>
     </div>
